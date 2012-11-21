@@ -13,7 +13,7 @@
  **/
  
 $GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownload'] = '{type_legend},type,headline;{source_legend},cloudApi,cloudSingleSRC;{dwnconfig_legend},linkTitle,titleText;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
-$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownloads'] = '{type_legend},type,headline;{source_legend},cloudApi,cloudMultiSRC,sortBy,useHomeDir;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownloads'] = '{type_legend},type,headline;{source_legend},cloudApi,cloudMultiSRC,sortBy;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['cloudApi'] = array
 (
