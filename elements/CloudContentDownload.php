@@ -79,7 +79,7 @@ class CloudContentDownload extends ContentElement
 		try 
 		{
 			$this->objCloudApi = Api\CloudApiManager::getApi($this->cloudApi);
-			$this->objCloudApi->authenticate();
+			//$this->objCloudApi->authenticate();
 		}
 		catch(\Exception $e)
 		{
@@ -90,7 +90,7 @@ class CloudContentDownload extends ContentElement
 		// get node
 		try 
 		{
-			$objNode = $this->objCloudApi->getNode($this->cloudSingleSRC);
+			$objNode = $this->objCloudApi->getNode(intval($this->cloudSingleSRC));
 		}
 		catch(\Exception $e)
 		{		

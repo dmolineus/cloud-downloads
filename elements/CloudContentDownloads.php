@@ -76,7 +76,6 @@ class CloudContentDownloads extends ContentElement
 	 */
 	public function generate()
 	{
-		
 		$this->cloudMultiSRC = deserialize($this->cloudMultiSRC);				
 
 		// Return if there are no files
@@ -90,7 +89,7 @@ class CloudContentDownloads extends ContentElement
 		try 
 		{
 			$this->objCloudApi = Api\CloudApiManager::getApi($this->cloudApi);
-			$this->objCloudApi->authenticate();
+			//$this->objCloudApi->authenticate();
 		}
 		catch(\Exception $e)
 		{
@@ -101,12 +100,13 @@ class CloudContentDownloads extends ContentElement
 		// Get the file entries from the database
 		$this->objFiles = array();
 		
-		foreach ($this->cloudMultiSRC as $strPath) 
+		foreach ($this->cloudMultiSRC as $intId) 
 		{
 			try {
-				$objNode = $this->objCloudApi->getNode($strPath);
+				$objNode = $this->objCloudApi->getNode(intval($intId));
 			}
-			catch(\Exception $e) {			
+			catch(\Exception $e) 
+			{			
 				continue;
 			}
 			
