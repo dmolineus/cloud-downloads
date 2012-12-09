@@ -103,7 +103,7 @@ class CloudContentDownloads extends ContentElement
 		foreach ($this->cloudMultiSRC as $intId) 
 		{
 			try {
-				$objNode = $this->objCloudApi->getNode(intval($intId));
+				$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
 			}
 			catch(\Exception $e) 
 			{			
@@ -124,7 +124,7 @@ class CloudContentDownloads extends ContentElement
 		if ($file != '' && !preg_match('/^meta(_[a-z]{2})?\.txt$/', basename($file)))
 		{
 			if(isset($this->objFiles[$file]) || isset($this->objFiles[dirname($file)])) {
-				$objNode = $this->objCloudApi->getNode($file);
+				$objNode = \CloudNodeModel::findOneByPath($file);
 				$this->objCloudApi->sendFileToBrowser($objNode);
 			}			
 		}
