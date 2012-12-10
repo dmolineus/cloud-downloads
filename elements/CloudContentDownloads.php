@@ -89,12 +89,10 @@ class CloudContentDownloads extends ContentElement
 		try 
 		{
 			$this->objCloudApi = Api\CloudApiManager::getApi($this->cloudApi);
-			//$this->objCloudApi->authenticate();
 		}
 		catch(\Exception $e)
 		{
 			return '<p class="errror">No Cloud Api found</p>';
-			
 		}
 
 		// Get the file entries from the database
@@ -102,16 +100,13 @@ class CloudContentDownloads extends ContentElement
 		
 		foreach ($this->cloudMultiSRC as $intId) 
 		{
-			try {
-				$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
-			}
-			catch(\Exception $e) 
-			{			
-				continue;
-			}
+			$objNode = \CloudNodeModel::findOneById($intId);
 			
-			$this->objFiles[$objNode->path] = $objNode;			 		
-		} 			
+			if($objNode !== null)
+			{
+				$this->objFiles[$objNode->path] = $objNode;	
+			}			 		
+		} 		
 
 		if ($this->objFiles === null)
 		{
@@ -123,9 +118,9 @@ class CloudContentDownloads extends ContentElement
 		// Send the file to the browser and do not send a 404 header (see #4632)
 		if ($file != '' && !preg_match('/^meta(_[a-z]{2})?\.txt$/', basename($file)))
 		{
-			if(isset($this->objFiles[$file]) || isset($this->objFiles[dirname($file)])) {
-				$objNode = \CloudNodeModel::findOneByPath($file);
-				$this->objCloudApi->sendFileToBrowser($objNode);
+			if(isset($this->objFiles[$file]) || isset($this->objFiles[dirname($file)])) 
+			{
+				$this->objCloudApi->sendFileToBrowser($this->objFiles[$file]);
 			}			
 		}
 

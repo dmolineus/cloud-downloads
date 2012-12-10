@@ -68,7 +68,7 @@ class CloudContentDownload extends ContentElement
 	 * @return string
 	 */
 	public function generate()
-	{		
+	{
 		// Return if there is no file
 		if ($this->cloudSingleSRC == '')
 		{
@@ -90,7 +90,7 @@ class CloudContentDownload extends ContentElement
 		// get node
 		try 
 		{
-			$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC); 
+			$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
 		}
 		catch(\Exception $e)
 		{		
@@ -114,9 +114,7 @@ class CloudContentDownload extends ContentElement
 		{
 			$this->objCloudApi->sendFileToBrowser($objNode);
 		}
-				
-
-		$this->cloudSingleSRC = $objNode->path;
+		
 		return parent::generate();
 	}
 
@@ -130,7 +128,7 @@ class CloudContentDownload extends ContentElement
 
 		if ($this->linkTitle == '')
 		{
-			$this->linkTitle = $objNode->basename;
+			$this->linkTitle = $objNode->name;
 		}
 
 		$this->Template->link = $this->linkTitle;
