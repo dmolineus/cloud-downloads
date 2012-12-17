@@ -29,4 +29,7 @@ ClassLoader::addClasses(array
 	// elements
 	'Netzmacht\Cloud\Downloads\CloudContentDownload' => 'system/modules/cloud-downloads/elements/CloudContentDownload.php',
 	'Netzmacht\Cloud\Downloads\CloudContentDownloads' => 'system/modules/cloud-downloads/elements/CloudContentDownloads.php',	
+	
+	// data container
+	'Netzmacht\Cloud\Downloads\DataContainer\Content' => 'system/modules/cloud-downloads/DataContainer/Content.php',
 ));

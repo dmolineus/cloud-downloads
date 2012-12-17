@@ -38,6 +38,11 @@ class CloudContentDownload extends ContentElement
 	 * @var Netzmacht\Cloud\Api
 	 */
 	protected $objCloudApi;
+		
+	/**
+	 * @var \CloudNodeModel
+	 */
+	protected $objNode;
 	
 
 	/**
@@ -88,11 +93,9 @@ class CloudContentDownload extends ContentElement
 		}
 		
 		// get node
-		try 
-		{
-			$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
-		}
-		catch(\Exception $e)
+		$this->objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
+		
+		if($this->objNode === null)
 		{		
 			return '';			
 		}
@@ -101,7 +104,7 @@ class CloudContentDownload extends ContentElement
 		$allowedDownload = trimsplit(',', strtolower($GLOBALS['TL_CONFIG']['allowedDownload']));
 
 		// Return if the file type is not allowed
-		if (!in_array($objNode->extension, $allowedDownload))
+		if (!in_array($this->objNode->extension, $allowedDownload))
 		{			
 			return '';
 			
@@ -110,9 +113,15 @@ class CloudContentDownload extends ContentElement
 		$file = \Input::get('cloudFile', true);
 
 		// Send the file to the browser and do not send a 404 header (see #4632)
-		if ($file != '' && $file == $objNode->path)
-		{
-			$this->objCloudApi->sendFileToBrowser($objNode);
+		if ($file != '' && $file == $this->objNode->path)
+		{	
+			try {
+				$this->objCloudApi->sendFileToBrowser($this->objNode);	
+			}
+			catch(\Exception $e)
+			{
+				
+			}
 		}
 		
 		return parent::generate();
@@ -124,20 +133,18 @@ class CloudContentDownload extends ContentElement
 	 */
 	protected function compile()
 	{
-		$objNode = \CloudNodeModel::findOneById($this->cloudSingleSRC);
-
 		if ($this->linkTitle == '')
 		{
-			$this->linkTitle = $objNode->name;
+			$this->linkTitle = $this->objNode->name;
 		}
 
 		$this->Template->link = $this->linkTitle;
 		$this->Template->title = specialchars($this->titleText ?: $this->linkTitle);
-		$this->Template->href = \Environment::get('request') . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos(\Environment::get('request'), '?') !== false) ? '&amp;' : '?') . 'cloudFile=' . $this->urlEncode($objNode->path);
-		$this->Template->filesize = $this->getReadableSize($objNode->filesize, 1);
-		$this->Template->icon = TL_FILES_URL . 'system/themes/' . $this->getTheme() . '/images/' . $objNode->icon;
-		$this->Template->mime = $objNode->mime;
-		$this->Template->extension = $objNode->extension;
-		$this->Template->path = $objNode->dirname;
+		$this->Template->href = \Environment::get('request') . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos(\Environment::get('request'), '?') !== false) ? '&amp;' : '?') . 'cloudFile=' . $this->urlEncode($this->objNode->path);
+		$this->Template->filesize = $this->getReadableSize($this->objNode->filesize, 1);
+		$this->Template->icon = TL_FILES_URL . 'system/themes/' . $this->getTheme() . '/images/' . $this->objNode->icon;
+		$this->Template->mime = $this->objNode->mime;
+		$this->Template->extension = $this->objNode->extension;
+		$this->Template->path = $this->objNode->dirname;
 	}
 }

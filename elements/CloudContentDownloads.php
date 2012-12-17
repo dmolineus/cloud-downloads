@@ -83,7 +83,6 @@ class CloudContentDownloads extends ContentElement
 		{
 			return '';
 		}
-						
 		
 		// load cloud api
 		try 
@@ -98,14 +97,11 @@ class CloudContentDownloads extends ContentElement
 		// Get the file entries from the database
 		$this->objFiles = array();
 		
-		foreach ($this->cloudMultiSRC as $intId) 
-		{
-			$objNode = \CloudNodeModel::findOneById($intId);
-			
-			if($objNode !== null)
-			{
-				$this->objFiles[$objNode->path] = $objNode;	
-			}			 		
+		$objNode = \CloudNodeModel::findMultipleByIds($this->cloudMultiSRC);
+		
+		while(($objNode !== null) && $objNode->next()) 
+		{			
+			$this->objFiles[$objNode->path] = $objNode->current();				 		
 		} 		
 
 		if ($this->objFiles === null)
@@ -118,10 +114,27 @@ class CloudContentDownloads extends ContentElement
 		// Send the file to the browser and do not send a 404 header (see #4632)
 		if ($file != '' && !preg_match('/^meta(_[a-z]{2})?\.txt$/', basename($file)))
 		{
-			if(isset($this->objFiles[$file]) || isset($this->objFiles[dirname($file)])) 
+			if(!isset($this->objFiles[$file]) && isset($this->objFiles[dirname($file)]))
 			{
-				$this->objCloudApi->sendFileToBrowser($this->objFiles[$file]);
-			}			
+				$objFile = \CloudNodeModel::findOneByPath(dirname($file));
+				
+				if($objFile !== null)
+				{
+					$this->objFiles[$file] = $objFile; 
+				}
+			}
+
+			if(isset($this->objFiles[$file])) 
+			{
+				try {
+					$this->objCloudApi->sendFileToBrowser($this->objFiles[$file]);	
+				}
+				catch(\Exception $e)
+				{
+					
+				}
+				
+			}
 		}
 
 		return parent::generate();
@@ -191,14 +204,14 @@ class CloudContentDownloads extends ContentElement
 			// Folders
 			else
 			{
-				$arrChildren = $objNode->getChildren();				
-
-				if ($objSubfiles === null)
+				$objChild = $objNode->getChildren();
+				
+				if ($objChild === null)
 				{
 					continue;
 				}
 
-				foreach ($arrChildren as $strPath => $objChild)
+				while($objChild->next())
 				{
 					// Skip subfolders
 					if ($objChild->type == 'folder')
@@ -211,10 +224,8 @@ class CloudContentDownloads extends ContentElement
 						continue;
 					}
 
-					//$arrMeta = $this->getMetaData($objSubfiles->meta, $objPage->language);
-
 					// Use the file name as title if none is given
-					$strTitle = specialchars(str_replace('_', ' ', preg_replace('/^[0-9]+_/', '', $objFile->filename)));
+					$strTitle = specialchars(str_replace('_', ' ', preg_replace('/^[0-9]+_/', '', $objChild->name)));
 
 					// Add the image
 					$files[$objChild->path] = array
@@ -224,7 +235,7 @@ class CloudContentDownloads extends ContentElement
 						'title'     => $strTitle,
 						'link'      => $strTitle,
 						'caption'   => '',
-						'href'      => \Environment::get('request') . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos(\Environment::get('request'), '?') !== false) ? '&amp;' : '?') . 'file=' . $this->urlEncode($objChild->path),
+						'href'      => \Environment::get('request') . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos(\Environment::get('request'), '?') !== false) ? '&amp;' : '?') . 'cloudFile=' . $this->urlEncode($objChild->path),
 						'filesize'  => $this->getReadableSize($objChild->filesize, 1),
 						'icon'      => 'system/themes/' . $this->getTheme() . '/images/' . $objChild->icon,
 						'mime'      => $objChild->mime,
@@ -233,8 +244,8 @@ class CloudContentDownloads extends ContentElement
 						'path'      => $objChild->dirname
 					);
 
-					//$auxDate[] = $objFile->mtime;
-					//$auxId[] = $objSubfiles->id;
+					$auxDate[] = $objChild->modified;
+					$auxId[] = $objChild->id;
 				}
 			}
 		}

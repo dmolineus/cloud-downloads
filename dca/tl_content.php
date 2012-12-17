@@ -5,22 +5,32 @@
  * 
  * Copyright (C) 2005-2012 Leo Feyer
  * 
- * @package   cloud-api 
+ * @package   cloud-downloads 
  * @author    David Molineus <http://www.netzmacht.de>
  * @license   GNU/LGPL 
  * @copyright Copyright 2012 David Molineus netzmacht creative 
  *  
  **/
 
- 
-$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownload'] = '{type_legend},type,headline;{source_legend},cloudApi,cloudSingleSRC;{dwnconfig_legend},linkTitle,titleText;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
-$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownloads'] = '{type_legend},type,headline;{source_legend},cloudApi,cloudMultiSRC,sortBy;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$GLOBALS['TL_DCA']['tl_content']['config']['palettes_callback'][] = array('Netzmacht\Cloud\Downloads\DataContainer\Content', 'loadSubpalettes');
+
+$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownload'] = '{type_legend},type,headline;{source_legend},cloudApi;{dwnconfig_legend},linkTitle,titleText;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$GLOBALS['TL_DCA']['tl_content']['palettes']['cloudDownloads'] = '{type_legend},type,headline;{source_legend},cloudApi;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+
+$GLOBALS['TL_DCA']['tl_content']['subpalettes_cloudApi']['cloudDownload']['cloudApi'] = array('!' => array('cloudSingleSRC'));
+$GLOBALS['TL_DCA']['tl_content']['subpalettes_cloudApi']['cloudDownloads']['cloudApi'] = array('!' => array('cloudMultiSRC,sortBy'));
+
+$GLOBALS['TL_DCA']['tl_content']['metasubselectpalettes']['cloudApi'] = array
+(
+	'!' => array('cloudSingleSRC'),
+);
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['cloudApi'] = array
 (
 	'label'				=> &$GLOBALS['TL_LANG']['tl_content']['cloudapi_apiselect'],
-	'inputType'			=> 'cloudApiSelect',
-	'eval'				=> array('mandatory'=>true, 'tl_class'=>'clr', 'submitOnChange'=>true),
+	'inputType'			=> 'select',
+	'foreignKey'		=> 'tl_cloud_api.title',
+	'eval'				=> array('mandatory'=>true, 'tl_class'=>'clr', 'submitOnChange'=>true, 'includeBlankOption' => true),
 	'sql'				=> "varchar(255) NOT NULL default ''"
 );
 
